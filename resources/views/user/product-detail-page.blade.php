@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>product Details</title>
+
     {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"> --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
     {{-- <link rel="stylesheet" href="{{ asset('vendor/jquery-toast-plugin/jquery.toast.min.css') }}"> --}}
@@ -75,40 +76,46 @@
             <div class="col-md-4">
                 <div class="card mt-3">
                     <div class="card-body">
-                        <h3>Comments</h3>
-                        @if ($product->comments->isNotEmpty())
-                            @foreach ($product->comments as $comment)
-                                <div>
+                        <div id="comment-container">
+                            <h3>Comments</h3>
+                            <span>
+                                @if ($product->comments->isNotEmpty())
+                                    @foreach ($product->comments as $comment)
+                                        <div>
 
-                                    <img src="{{ asset('default-user.jpg') }}" alt="User Image"
-                                        style="width: 50px; height: 50px; border-radius: 50%;">
+                                            <img src="{{ asset('default-user.jpg') }}" alt="User Image"
+                                                style="width: 50px; height: 50px; border-radius: 50%;">
 
-                                    <strong>{{ $comment->user->name }}</strong>
-                                </div>
-                                <p>{{ $comment->comment }}</p>
-                            @endforeach
-                        @else
-                            <p>No comments yet. Be the first to comment on this product!</p>
-                        @endif
-
+                                            <strong>{{ $comment->user->name }}</strong>
+                                        </div>
+                                        <p>{{ $comment->comment }}</p>
+                                    @endforeach
+                                @else
+                                    <p>No comments yet. Be the first to comment on this product!</p>
+                                @endif
+                            </span>
+                        </div>
                         <hr>
+                        <div id="review-container">
+                            <h3>Reviews</h3>
+                            <samp>
+                                @if ($product->reviews->isNotEmpty())
+                                    @foreach ($product->reviews as $review)
+                                        <div>
+                                            <img src="{{ asset('default-user.jpg') }}" alt="User Image"
+                                                style="width: 50px; height: 50px; border-radius: 50%;">
+                                            <strong>{{ $review->user->name }}</strong>
+                                            <br>
+                                            <span>Rating: {{ $review->rating }}</span>
+                                        </div>
+                                        <p>{{ $review->review }}</p>
+                                    @endforeach
+                                @else
+                                    <p>No reviews yet. Be the first to review this product!</p>
+                                @endif
+                            </samp>
+                        </div>
 
-                        <h3>Reviews</h3>
-
-                        @if ($product->reviews->isNotEmpty())
-                            @foreach ($product->reviews as $review)
-                                <div>
-                                    <img src="{{ asset('default-user.jpg') }}" alt="User Image"
-                                        style="width: 50px; height: 50px; border-radius: 50%;">
-                                    <strong>{{ $review->user->name }}</strong>
-                                    <br>
-                                    <span>Rating: {{ $review->rating }}</span>
-                                </div>
-                                <p>{{ $review->review }}</p>
-                            @endforeach
-                        @else
-                            <p>No reviews yet. Be the first to review this product!</p>
-                        @endif
                     </div>
                 </div>
             </div>
@@ -119,6 +126,7 @@
     {{-- <script src="{{ asset('vendor/jquery-toast-plugin/jquery.toast.min.js') }}"></script> --}}
     <script type="module">
         $(function() {
+            var baseUrl = "{{ url('/') }}";
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -145,28 +153,26 @@
                                 $('span.' + prefix + '_error').text(val[0]);
                             });
                         } else {
+
+                            $("#comment-container").append("<span><div><img src='" + baseUrl +
+                                "/default-user.jpg' style='width: 50px; height: 50px; border-radius: 50%;'><strong>" +
+                                data.username + "</strong></div><p>" + $('#comment').val() +
+                                "</p></span>");
+
                             $('#storeComment').trigger("reset");
-                            // $.toast({
-                            //     heading: 'Success',
-                            //     text: 'Comment is added  Successfully',
-                            //     showHideTransition: 'slide',
-                            //     icon: 'success',
-                            //     loaderBg: '#f96868',
-                            //     position: 'top-right'
-                            // });
+
                             Toastify({
                                 text: "Comment is Added successfully",
                                 duration: 3000,
                                 destination: "",
                                 newWindow: true,
                                 close: true,
-                                gravity: "top", // `top` or `bottom`
-                                position: "right", // `left`, `center` or `right`
-                                stopOnFocus: true, // Prevents dismissing of toast on hover
+                                gravity: "top",
+                                position: "right",
+                                stopOnFocus: true,
                                 style: {
                                     background: "green",
                                 },
-                                onClick: function() {} // Callback after click
                             }).showToast();
                         }
                     },
@@ -198,8 +204,15 @@
                                 $('span.' + prefix + '_error').text(val[0]);
                             });
                         } else {
+
+                            $("#review-container").append("<span><div><img src='" + baseUrl +
+                                "/default-user.jpg' style='width: 50px; height: 50px; border-radius: 50%;'><strong>" +
+                                data.username + "</strong><br><span>Rating:" + $('#rating')
+                                .val() + "</span></div><p>" + $('#review').val() +
+                                "</p></span>");
+
                             $('#storeReview').trigger("reset");
-                            
+
                             Toastify({
                                 text: "Review is Added successfully",
                                 duration: 3000,

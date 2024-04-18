@@ -53,7 +53,7 @@ class UserController extends Controller
         if (!$ok) {
             return response()->json(['status' => 0, 'msg' => 'something goes wrong']);
         } else {
-            return response()->json(['status' => 1, 'msg' => 'created  Successfully'], 200);
+            return response()->json(['status' => 1, 'username' => auth()->user()->name], 200);
         }
     }
 
@@ -79,7 +79,7 @@ class UserController extends Controller
         if (!$ok) {
             return response()->json(['status' => 0, 'msg' => 'something goes wrong']);
         } else {
-            return response()->json(['status' => 1, 'msg' => 'created  Successfully'], 200);
+            return response()->json(['status' => 1, 'username' => auth()->user()->name], 200);
         }
     }
 
