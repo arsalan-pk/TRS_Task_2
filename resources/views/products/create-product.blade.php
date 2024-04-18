@@ -94,7 +94,10 @@
 
                         });
                     } else {
+
                         $('.text-danger').text('');
+                        $('#storeProduct').trigger('reset');
+
                         $.toast({
                             heading: 'Success',
                             text: 'update successfully',
@@ -103,7 +106,6 @@
                             loaderBg: '#f96868',
                             position: 'top-right'
                         });
-                        window.history.back();
                     }
                 },
                 error: function(xhr, status, error) {

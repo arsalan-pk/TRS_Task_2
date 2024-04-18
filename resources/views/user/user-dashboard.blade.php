@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>user home</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"> --}}
+    @vite(['resources/scss/app.css', 'resources/js/app.js'])
+
 </head>
 
 <body>
@@ -30,7 +32,7 @@
                                 <img src="{{ asset('default.png') }}" class="card-img-top" alt="Product Image">
                             @endif
                             <br />
-                            <h2 class="pull-right">${{ $product->price }}</h2>
+                            <h2 class="text-end">${{ $product->price }}</h2>
                             <h2><a href="{{ route('product-detail-page', $product->id) }}">{{ $product->name }}</a></h2>
                             <br />
                             <p class="text-justify">{{ $product->description }}</p>

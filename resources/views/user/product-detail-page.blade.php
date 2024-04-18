@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>product Details</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"> --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="{{ asset('vendor/jquery-toast-plugin/jquery.toast.min.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('vendor/jquery-toast-plugin/jquery.toast.min.css') }}"> --}}
+    @vite(['resources/scss/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
@@ -114,9 +115,9 @@
 
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="{{ asset('vendor/jquery-toast-plugin/jquery.toast.min.js') }}"></script>
-    <script type="text/javascript">
+    {{-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> --}}
+    {{-- <script src="{{ asset('vendor/jquery-toast-plugin/jquery.toast.min.js') }}"></script> --}}
+    <script type="module">
         $(function() {
             $.ajaxSetup({
                 headers: {
@@ -145,15 +146,28 @@
                             });
                         } else {
                             $('#storeComment').trigger("reset");
-                            $.toast({
-                                heading: 'Success',
-                                text: 'Comment is added  Successfully',
-                                showHideTransition: 'slide',
-                                icon: 'success',
-                                loaderBg: '#f96868',
-                                position: 'top-right'
-                            });
-
+                            // $.toast({
+                            //     heading: 'Success',
+                            //     text: 'Comment is added  Successfully',
+                            //     showHideTransition: 'slide',
+                            //     icon: 'success',
+                            //     loaderBg: '#f96868',
+                            //     position: 'top-right'
+                            // });
+                            Toastify({
+                                text: "Comment is Added successfully",
+                                duration: 3000,
+                                destination: "",
+                                newWindow: true,
+                                close: true,
+                                gravity: "top", // `top` or `bottom`
+                                position: "right", // `left`, `center` or `right`
+                                stopOnFocus: true, // Prevents dismissing of toast on hover
+                                style: {
+                                    background: "green",
+                                },
+                                onClick: function() {} // Callback after click
+                            }).showToast();
                         }
                     },
                     error: function(xhr, status, error) {
@@ -185,14 +199,20 @@
                             });
                         } else {
                             $('#storeReview').trigger("reset");
-                            $.toast({
-                                heading: 'Success',
-                                text: 'Review is added  Successfully',
-                                showHideTransition: 'slide',
-                                icon: 'success',
-                                loaderBg: '#f96868',
-                                position: 'top-right'
-                            });
+                            
+                            Toastify({
+                                text: "Review is Added successfully",
+                                duration: 3000,
+                                destination: "",
+                                newWindow: true,
+                                close: true,
+                                gravity: "top",
+                                position: "right",
+                                stopOnFocus: true,
+                                style: {
+                                    background: "green",
+                                },
+                            }).showToast();
 
                         }
                     },

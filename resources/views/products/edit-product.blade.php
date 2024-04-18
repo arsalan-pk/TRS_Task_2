@@ -40,7 +40,7 @@
                     <select id="categories" name="categories[]" multiple class="form-control" required>
                         @foreach ($categories as $category)
                             <option value="{{ $category->id }}"
-                                {{ in_array($category->id, old('categories', $product->categories->pluck('id')->toArray())) ? 'selected' : '' }}>
+                                {{ in_array($category->id, $product->categories->pluck('id')->toArray()) ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
                         @endforeach
@@ -121,7 +121,12 @@
                             loaderBg: '#f96868',
                             position: 'top-right'
                         });
-                        window.history.back();
+
+                        $('#updateProduct').trigger('reset');
+                        setTimeout(() => {
+                            window.history.back();
+                        }, 3000);
+
                     }
                 },
                 error: function(xhr, status, error) {

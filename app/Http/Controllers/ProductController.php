@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class ProductController extends Controller
 {
@@ -110,7 +111,7 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Product::where('id', '=', $id)->first();
+        $product = Product::with('categories')->where('id', '=', $id)->first();
         $categories = Category::get();
         return view('products.edit-product', compact('product', 'categories'));
     }
@@ -123,7 +124,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'description' => 'required',
-            'price' => 'required',
+            'price' => 'required|numeric',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ]);
 
@@ -148,7 +149,6 @@ class ProductController extends Controller
 
                 $compressedImage = Image::make($image)
                     ->encode('jpg', 75);
-
                 $compressedImage->save(storage_path('app/public/images/' . $imageName));
 
                 $product->images()->create([
