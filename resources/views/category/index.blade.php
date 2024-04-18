@@ -43,8 +43,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form class="forms-sample" action="{{ route('storeCategory') }}" method="POST" id="storeCategory"
-                        enctype="multipart/form-data">
+                    <form class="forms-sample" action="{{ route('categories.store') }}" method="POST" id="storeCategory">
                         @csrf
                         <fieldset>
                             <div class="row">
@@ -72,7 +71,7 @@
         </div>
     </div>
     {{-- edit modal --}}
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+    {{-- <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -83,7 +82,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form class="forms-sample" action="{{ route('updateCategory') }}" method="POST" id="updateCategory">
+                    <form class="forms-sample" action="{{ route('categories.update') }}" method="POST" id="updateCategory">
                         @csrf
                         <fieldset>
                             <div class="row">
@@ -110,7 +109,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 @stop
 
 {{-- Push extra CSS --}}
@@ -133,11 +132,16 @@
     <script src="{{ asset('vendor/datatable/datatables.net/responsive.bootstrap.min.js') }}"></script>
     <script type="text/javascript">
         $(function() {
-
+            // dom = responsiveDataTables();
             let table = $('#Category').DataTable({
+                ajax: "{{ route('categories.index') }}",
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('indexCategory') }}",
+                scrollX: false,
+                responsive: true,
+                autoWidth: false,
+                stateSave: true,
+               
                 columns: [{
                         data: 'name',
                         name: 'name'
@@ -209,7 +213,7 @@
             // edit script
             $('body').on('click', '#editCategory', function() {
                 let id = $(this).attr('data-id');
-                $.get("{{ route('editCategory') }}", {
+                $.get("{{ route('categories.edit',"+id+") }}", {
                         'id': id
                     },
                     function(data) {
@@ -264,7 +268,7 @@
             // delete script
             $('body').on('click', '#deleteCategory', function() {
                 let id = $(this).attr('data-id');
-                var url = "{{ route('deleteCategory', ':id') }}";
+                var url = "{{ route('categories.destroy', ':id') }}";
                 url = url.replace(':id', id);
                 $.ajaxSetup({
                     headers: {

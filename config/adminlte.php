@@ -317,7 +317,7 @@ return [
         // ],
         [
             'text' => 'Category',
-            'url' => 'index-category',
+            'url' => 'categories',
             'icon' => 'fas fa-fw fa-user',
             // 'can'         => 'delete category',
             // 'role'        => 'admin',
