@@ -33,7 +33,7 @@
                             @endif
                             <br />
                             <h2 class="text-end">${{ $product->price }}</h2>
-                            <h2><a href="{{ route('product-detail-page', $product->id) }}">{{ $product->name }}</a></h2>
+                            <h2><a href="{{ route('products.show', $product->id) }}">{{ $product->name }}</a></h2>
                             <br />
                             <p class="text-justify">{{ $product->description }}</p>
                         </div>

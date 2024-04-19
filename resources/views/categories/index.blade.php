@@ -31,85 +31,8 @@
             </table>
         </div>
     </div>
-    {{-- create modal --}}
-    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createModalLabel">Create New Category</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form class="forms-sample" action="{{ route('categories.store') }}" method="POST" id="storeCategory">
-                        @csrf
-                        <fieldset>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group row">
-                                        <label for="category_name"
-                                            class="col-sm-3 col-form-label">{{ __('category name') }}</label>
-                                        <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="category_name"
-                                                name="category_name" placeholder="" value="{{ old('category_name') }}"
-                                                autocomplete="category_name">
-                                            <span class="text-danger category_name_error" id=""></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Store</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{-- edit modal --}}
-    {{-- <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Update Category</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form class="forms-sample" action="{{ route('categories.update') }}" method="POST" id="updateCategory">
-                        @csrf
-                        <fieldset>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group row">
-                                        <label for="category_name"
-                                            class="col-sm-3 col-form-label">{{ __('category name') }}</label>
-                                        <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="category_edit"
-                                                name="category_name" placeholder="" value="{{ old('category_name') }}"
-                                                autocomplete="category_name">
-                                            <span class="text-danger category_name_error" id=""></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="hidden" name="category_id" id="category_id">
-                        </fieldset>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div> --}}
+
+    @include('categories.modal')
 @stop
 
 {{-- Push extra CSS --}}
@@ -132,7 +55,6 @@
     <script src="{{ asset('vendor/datatable/datatables.net/responsive.bootstrap.min.js') }}"></script>
     <script type="text/javascript">
         $(function() {
-            // dom = responsiveDataTables();
             let table = $('#Category').DataTable({
                 ajax: "{{ route('categories.index') }}",
                 processing: true,
@@ -141,7 +63,7 @@
                 responsive: true,
                 autoWidth: false,
                 stateSave: true,
-               
+
                 columns: [{
                         data: 'name',
                         name: 'name'
@@ -160,20 +82,38 @@
                     },
                 ],
             });
+            // to hide the modal
+            $('body').on('click', '#hideModal', function() {
+                $('#categories-update').attr('id', 'modal-form');
+                $('#categories-store').attr('id', 'modal-form');
+                $('#modal').modal('hide');
+            });
 
             // create script
             $('body').on('click', '#createCategory', function() {
-                $('#createModal').modal('show');
-                $('#storeCategory')[0].reset()
+                $('#modal').modal('show');
+                $('#modalLabel').text('Categories Create');
+                $('#modal-form').attr('id', 'categories-store');
+                $('#_method').attr('value', "POST");
+                $('#categories-store').attr('action', '{{ route('categories.store') }}');
+                $('#submit-btn').text('Save');
+                $('#categories-store').trigger('reset');
+                $('.text-danger').text('');
+            });
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
             });
             // store script
-            $('#storeCategory').on('submit', function(e) {
+            $('body').on('submit', '#categories-store', function(e) {
                 e.preventDefault();
                 $.ajax({
                     url: $(this).attr('action'),
                     method: $(this).attr('method'),
                     type: 'post',
-                    data: new FormData($('#storeCategory')[0]),
+                    data: new FormData($('#categories-store')[0]),
                     processData: false,
                     dataType: 'json',
                     contentType: false,
@@ -189,8 +129,8 @@
                         } else {
 
                             $('.text-danger').text('');
-                            $('#createModal').modal('hide');
-
+                            $('#modal').modal('hide');
+                            $('#categories-store').attr('id', 'modal-form');
                             $.toast({
                                 heading: 'Success',
                                 text: 'created  Successfully',
@@ -211,26 +151,32 @@
             });
 
             // edit script
-            $('body').on('click', '#editCategory', function() {
+            $('body').on('click', '#categories-edit', function() {
                 let id = $(this).attr('data-id');
-                $.get("{{ route('categories.edit',"+id+") }}", {
-                        'id': id
-                    },
+                var url = "{{ route('categories.edit', ':id') }}";
+                $.get(url.replace(':id', id),
                     function(data) {
-                        $('#editModal').modal('show');
-                        $('#category_edit').val(data.name);
+                        $('#modal').modal('show');
+                        $('#modalLabel').text('Categories Update');
+                        $('#modal-form').attr('id', 'categories-update');
+                        $('#categories-update').trigger("reset");
+                        $('#_method').attr('value', "PUT");
+                        var url = "{{ route('categories.update', ':id') }}";
+                        $('#categories-update').attr('action', url.replace(':id', id));
+                        $('#submit-btn').text('Update');
+                        $('#categories-update')[0].reset()
+                        $('#category_name').attr('value', data.name);
                         $('#category_id').val(data.id);
                     })
             });
 
             // update script
-            $('#updateCategory').on('submit', function(e) {
+            $('body').on('submit', '#categories-update', function(e) {
                 e.preventDefault();
                 $.ajax({
                     url: $(this).attr('action'),
                     method: $(this).attr('method'),
-                    type: 'post',
-                    data: new FormData($('#updateCategory')[0]),
+                    data: new FormData($('#categories-update')[0]),
                     processData: false,
                     dataType: 'json',
                     contentType: false,
@@ -243,10 +189,11 @@
                             $.each(data.error, function(prefix, val) {
                                 $('span.' + prefix + '_error').text(val[0]);
                             });
+                            $('#categories-update').attr('id', 'modal-form');
                         } else {
                             $('.text-danger').text('');
-                            $('#editModal').modal('hide');
-
+                            $('#modal').modal('hide');
+                            $('#categories-update').attr('id', 'modal-form');
                             $.toast({
                                 heading: 'Success',
                                 text: 'update successfully',
@@ -266,7 +213,7 @@
             });
 
             // delete script
-            $('body').on('click', '#deleteCategory', function() {
+            $('body').on('click', '#categories-destroy', function() {
                 let id = $(this).attr('data-id');
                 var url = "{{ route('categories.destroy', ':id') }}";
                 url = url.replace(':id', id);
@@ -321,6 +268,7 @@
 
                 });
             });
+
         });
     </script>
 @endpush

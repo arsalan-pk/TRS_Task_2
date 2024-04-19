@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Review;
 use App\Models\Comment;
 use App\Models\Product;
-use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -13,14 +14,22 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function dashboard()
     {
+        $user = Auth::user();
+
+        if ($user->hasAnyRole('admin', 'subadmin')) {
+            return view('dashboard');
+        } else {
+            $products = Product::with('images')->paginate(10);
+            return view('users.dashboard', compact('products'));
+        }
     }
-    public function detail($id)
+    public function productsShow($id)
     {
         $product = Product::with(['images', 'comments', 'comments.user', 'reviews', 'reviews.user'])->findOrFail($id);
         $hasImage = $product->images->isNotEmpty();
-        return view('user.product-detail-page', compact('product', 'hasImage'));
+        return view('users.show-products', compact('product', 'hasImage'));
     }
     /**
      * Show the form for creating a new resource.
@@ -33,7 +42,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function storeComment(Request $request)
+    public function commentsStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'comment' => 'required',
@@ -57,7 +66,7 @@ class UserController extends Controller
         }
     }
 
-    public function storeReview(Request $request)
+    public function reviewsStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'rating' => 'required',

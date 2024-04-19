@@ -13,7 +13,7 @@
         <div class="card-header">
             <h3 class="card-title">Product List</h3>
             <div class="card-tools">
-                <a href="{{ route('createProduct') }}" class="btn btn-primary btn-sm">
+                <a href="{{ route('products.create') }}" class="btn btn-primary btn-sm">
                     <i class="fas fa-plus"></i> Add Product</a>
             </div>
         </div>
@@ -31,86 +31,7 @@
             </table>
         </div>
     </div>
-    {{-- create modal --}}
-    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createModalLabel">Modal title</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form class="forms-sample" action="{{ route('storeProduct') }}" method="POST" id="storeProduct"
-                        enctype="multipart/form-data">
-                        @csrf
-                        <fieldset>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group row">
-                                        <label for="Product_name"
-                                            class="col-sm-3 col-form-label">{{ __('Product name') }}</label>
-                                        <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="Product_name" name="Product_name"
-                                                placeholder="" value="{{ old('Product_name') }}"
-                                                autocomplete="Product_name">
-                                            <span class="text-danger Product_name_error" id=""></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Store</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{-- edit modal --}}
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Update Product</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form class="forms-sample" action="{{ route('updateProduct') }}" method="POST" id="updateProduct">
-                        @csrf
-                        <fieldset>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group row">
-                                        <label for="Product_name"
-                                            class="col-sm-3 col-form-label">{{ __('Product name') }}</label>
-                                        <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="Product_edit" name="Product_name"
-                                                placeholder="" value="{{ old('Product_name') }}"
-                                                autocomplete="Product_name">
-                                            <span class="text-danger Product_name_error" id=""></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="hidden" name="Product_id" id="Product_id">
-                        </fieldset>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+
 @stop
 
 {{-- Push extra CSS --}}
@@ -137,7 +58,7 @@
             let table = $('#Product').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('indexProduct') }}",
+                ajax: "{{ route('products.index') }}",
                 columns: [{
                         data: 'name',
                         name: 'name'
@@ -158,9 +79,9 @@
             });
 
             // delete script
-            $('body').on('click', '#deleteProduct', function() {
+            $('body').on('click', '#products-destroy', function() {
                 let id = $(this).attr('data-id');
-                var url = "{{ route('deleteProduct', ':id') }}";
+                var url = "{{ route('products.destroy', ':id') }}";
                 url = url.replace(':id', id);
                 $.ajaxSetup({
                     headers: {

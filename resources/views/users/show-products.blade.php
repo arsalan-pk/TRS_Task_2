@@ -37,7 +37,7 @@
                         <h3>Comments</h3>
                         <hr>
                         <h4>Add a Comment</h4>
-                        <form method="POST" action="{{ route('store-comment') }}" id="storeComment">
+                        <form method="POST" action="{{ route('comments.store') }}" id="storeComment">
                             @csrf
                             <input type="hidden" id="product_id" name="product_id" value="{{ $product->id }}">
                             <div class="form-group">
@@ -51,7 +51,7 @@
                         <hr>
 
                         <h4>Add a Review</h4>
-                        <form method="POST" action="{{ route('store-review') }}" id="storeReview">
+                        <form method="POST" action="{{ route('reviews.store') }}" id="storeReview">
                             @csrf
                             <input type="hidden" id="product_id" name="product_id" value="{{ $product->id }}">
                             <div class="form-group">

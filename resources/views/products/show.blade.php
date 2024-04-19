@@ -26,7 +26,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{ $product->name }}</h5>
 
-                                <a href="{{ route('product-detail-page', $product->id) }}" class="btn btn-primary">View
+                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-primary">View
                                     Details</a>
                             </div>
                         </div>

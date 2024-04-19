@@ -22,14 +22,20 @@ class ProductController extends Controller
         if (\request()->ajax()) {
             $data = Product::get();
             return DataTables::of($data)
-                // ->addColumn('action', function ($row) {
-                //     $actionBtn = '@can("edit category")<a href="javascript:void(0)" id="editCategory" data-id="' . $row->id . '" class="btn btn-sm"><i class="fas fa-edit"></i></a>@endcan
-                //  <a href="javascript:void(0)" id="deleteCategory" data-id="' . $row->id . '" style="color:red;"><i class="fa fa-trash" aria-hidden="true"></i></a>';
-                //     return $actionBtn;
-                // })
-                ->addColumn('action', 'products.product-action')
+                ->addColumn('action', function ($row) {
+                    if (auth()->user()->hasAnyPermission(['edit category', 'delete category'])) {
+                        $action_btn =
+                            '<a href="' . route('products.edit', $row->id) . '" id="categories-edit" data-id="' . $row->id . '" style="color:green;"><i class="fas fa-edit"></i></a>
+                        <a href="javascript:void(0)" id="products-destroy" data-id="' . $row->id . '" style="color:red;"><i class="fa fa-trash" aria-hidden="true"></i></a>';
+                    } else {
+                        $action_btn = '<h5>No Permission</h5>';
+                    }
+
+                    return $action_btn;
+                })
+
                 ->addColumn('detail', function ($row) {
-                    return  '<a href="/product-detail-page/' .  $row->id . '">Show Detail</a>';
+                    return  '<a href="/products/' .  $row->id . '">Show Detail</a>';
                 })
 
                 ->rawColumns(['action', 'detail'])
@@ -45,7 +51,7 @@ class ProductController extends Controller
     {
         //
         $categories = Category::get(['name', 'id']);
-        return view('products.create-product', compact('categories'));
+        return view('products.create', compact('categories'));
     }
 
     /**
@@ -103,7 +109,7 @@ class ProductController extends Controller
         $category = Category::findOrFail($id);
         $products = $category->products()->paginate(10);
 
-        return view('products.show-product', compact('category', 'products'));
+        return view('products.show', compact('category', 'products'));
     }
 
     /**
@@ -113,7 +119,7 @@ class ProductController extends Controller
     {
         $product = Product::with('categories')->where('id', '=', $id)->first();
         $categories = Category::get();
-        return view('products.edit-product', compact('product', 'categories'));
+        return view('products.edit', compact('product', 'categories'));
     }
 
     /**
