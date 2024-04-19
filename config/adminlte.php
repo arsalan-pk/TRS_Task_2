@@ -326,7 +326,7 @@ return [
         ],
         [
             'text' => 'Product',
-            'url' => 'index-product',
+            'url' => 'products',
             'icon' => 'fas fa-fw fa-lock',
         ],
         // ['header' => 'account_settings'],

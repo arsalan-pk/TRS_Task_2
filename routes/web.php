@@ -23,49 +23,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-
-    $user = Auth::user();
-
-    if ($user->hasAnyRole('admin', 'subadmin')) {
-        return view('dashboard');
-    } else {
-        $products = Product::with('images')->paginate(10);
-        return view('user.user-dashboard', compact('products'));
-    }
-
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+Route::get('/dashboard', [UserController::class, 'dashboard'])
+    ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
-
-    Route::get('/product-detail-page/{id}', [UserController::class, 'detail'])->name('product-detail-page');
-    Route::post('/store-comment', [UserController::class, 'storeComment'])->name('store-comment');
-    Route::post('/store-review', [UserController::class, 'storeReview'])->name('store-review');
-
+    Route::get('/products/{id}', [UserController::class, 'productsShow'])->name('product.show');
+    Route::post('/comments', [UserController::class, 'commentsStore'])->name('comments.store');
+    Route::post('/reviews', [UserController::class, 'reviewsStore'])->name('reviews.store');
 });
 
-
 Route::middleware(['auth', 'role:admin|subadmin'])->group(function () {
-
-    // Route::get('/index-category', [CategoryController::class, 'index'])->name('indexCategory');
-    // Route::delete('/delete-category/{id}', [CategoryController::class, 'destroy'])->name('deleteCategory');
-    // Route::get('/edit-category', [CategoryController::class, 'edit'])->name('editCategory');
-    // Route::post('/store-category', [CategoryController::class, 'store'])->name('storeCategory');
-    // Route::post('/update-category', [CategoryController::class, 'update'])->name('updateCategory');
-
     Route::resource('categories', CategoryController::class);
-
-    Route::controller(ProductController::class)->group(function () {
-        Route::get('index-product', 'index')->name('indexProduct');
-        Route::get('create-product', 'create')->name('createProduct');
-        Route::post('store-product', 'store')->name('storeProduct');
-        Route::get('edit-product/{id}', 'edit')->name('editProduct');
-        Route::get('show-product/{id}', 'show')->name('showProduct');
-        Route::get('detail-product/{id}', 'show')->name('detailProduct');
-        Route::post('update-product', 'update')->name('updateProduct');
-        Route::delete('delete-product/{id}', 'destroy')->name('deleteProduct');
-    });
+    Route::resource('products', ProductController::class);
+    Route::get('product/create', [ProductController::class, 'create'])->name('products.create');
+    Route::get('products/{category}/category', [ProductController::class, 'show'])->name('products.category.show');
 });
 
 require __DIR__ . '/auth.php';

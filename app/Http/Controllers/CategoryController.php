@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Http\Requests\StoreCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -17,19 +15,31 @@ class CategoryController extends Controller
     public function index()
     {
         //
+
         if (\request()->ajax()) {
             $data = Category::get(['id', 'name']);
 
             return DataTables::of($data)
-                ->addColumn('action', 'category.category-action')
+                ->addColumn('action', function ($row) {
+                    if (auth()->user()->hasAnyPermission(['edit category', 'delete category'])) {
+                        $action_btn =
+                            '<a href="javascript:void(0)" id="categories-edit" data-id="' . $row->id . '" style="color:green;"><i class="fas fa-edit"></i></a>
+                            <a href="javascript:void(0)" id="categories-destroy" data-id="' . $row->id . '" style="color:red;"><i class="fa fa-trash" aria-hidden="true"></i></a>';
+                    } else {
+                        $action_btn = '<h5>No Permission</h5>';
+                    }
+
+                    return $action_btn;
+                })
                 ->addColumn('product', function ($row) {
-                    return  '<a href="/show-product/' .  $row->id . '">Show Products</a>';
+
+                    return  '<a href="/products/' .  $row->id . '/category">Show Products</a>';
                 })
                 ->rawColumns(['action', 'product'])
                 ->make(true);
         }
-        
-        return view('category.index');
+
+        return view('categories.index');
     }
 
     /**
@@ -76,18 +86,19 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request)
+    public function edit(Request $request, $id)
     {
         //
-        $product = Category::where('id', '=', $request->id)->first();
+        $product = Category::whereId($id)->first('name');
         return response()->json($product);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,)
+    public function update(Request $request, $id)
     {
+
         $validator = Validator::make($request->all(), [
             'category_name' => 'required',
         ]);
@@ -96,7 +107,7 @@ class CategoryController extends Controller
             return response()->json(['status' => 0, 'error' => $validator->errors()->toArray()]);
         } else {
 
-            $query = Category::find($request->category_id)->update([
+            $query = Category::find($id)->update([
                 'name' => $request->category_name,
             ]);
         }
