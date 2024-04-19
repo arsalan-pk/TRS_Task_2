@@ -27,7 +27,7 @@ Route::get('/dashboard', [UserController::class, 'dashboard'])
     ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/products/{id}', [UserController::class, 'productsShow'])->name('product.show');
+    Route::get('/products/{id}', [UserController::class, 'productsShow'])->name('products.show');
     Route::post('/comments', [UserController::class, 'commentsStore'])->name('comments.store');
     Route::post('/reviews', [UserController::class, 'reviewsStore'])->name('reviews.store');
 });
